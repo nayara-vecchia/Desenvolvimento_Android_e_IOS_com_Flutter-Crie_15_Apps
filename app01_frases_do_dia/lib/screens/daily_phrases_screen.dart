@@ -7,7 +7,8 @@ import 'package:app01_frases_do_dia/data/phrases.dart';
 
 
 class DailyPhrases extends StatefulWidget {
-  const DailyPhrases({super.key});
+  const DailyPhrases({super.key, required this.title});
+  final String title;
 
   @override
   State<DailyPhrases> createState() => _DailyPhrasesState();
@@ -29,7 +30,7 @@ class _DailyPhrasesState extends State<DailyPhrases> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Frases do Dia'),
+        title: Text(widget.title),
         shadowColor: Theme.of(context).colorScheme.background,
       ),
       body: Center(

@@ -6,14 +6,8 @@ void main() {
   runApp(const MyApp());
 }
 
-class MyApp extends StatefulWidget {
+class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
-  @override
-  State<MyApp> createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -24,7 +18,8 @@ class _MyAppState extends State<MyApp> {
           primary: Colors.green.shade400,
           background: Colors.green.shade700,
           brightness: Brightness.light,
-        ).copyWith(secondary: Colors.green.shade900, tertiary: Colors.grey.shade500),
+        ).copyWith(
+            secondary: Colors.green.shade900, tertiary: Colors.grey.shade500),
         textTheme: ThemeData.light().textTheme.copyWith(
               bodySmall: const TextStyle(
                 fontSize: 16,
@@ -40,16 +35,15 @@ class _MyAppState extends State<MyApp> {
           style: ButtonStyle(
             textStyle: MaterialStateProperty.all<TextStyle>(
               const TextStyle(
-                fontSize: 18, 
-                fontWeight:
-                    FontWeight.bold,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
               ),
             ),
           ),
         ),
+        primarySwatch: Colors.blue,
       ),
-      home: const DailyPhrases(),
-      debugShowCheckedModeBanner: false,
+      home: const DailyPhrases(title: "Frases do Dia"),
     );
   }
 }
