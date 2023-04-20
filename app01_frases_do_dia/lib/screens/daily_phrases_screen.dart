@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'dart:math';
 
 import 'package:app01_frases_do_dia/widgets/logo.dart';
 import 'package:app01_frases_do_dia/widgets/phrase.dart';
+import 'package:app01_frases_do_dia/data/phrases.dart';
+
 
 class DailyPhrases extends StatefulWidget {
   const DailyPhrases({super.key});
@@ -11,6 +14,17 @@ class DailyPhrases extends StatefulWidget {
 }
 
 class _DailyPhrasesState extends State<DailyPhrases> {
+
+  String _generatedPhrase = 'Clique no botão para gerar uma frase';
+
+  void generatePhrase() {
+    int phraseIndex = Random().nextInt( phrases.length );
+
+    setState(() {
+      _generatedPhrase = phrases[phraseIndex];
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,9 +39,9 @@ class _DailyPhrasesState extends State<DailyPhrases> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
               const Logo(),
-              const Phrase(),
+              Phrase(_generatedPhrase),
               ElevatedButton(
-                onPressed: () {},
+                onPressed: generatePhrase,
                 child: const Text('Nova Frase'),
               ),
             ],
