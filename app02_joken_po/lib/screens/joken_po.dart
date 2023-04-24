@@ -66,7 +66,7 @@ class _JokenPoState extends State<JokenPo> {
           ),
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Choise(appChoise, 150, () {}),
+            child: Choise(appChoise, 150, (_) {}),
           ),
           Padding(
             padding: const EdgeInsets.only(top: 30, bottom: 16),
