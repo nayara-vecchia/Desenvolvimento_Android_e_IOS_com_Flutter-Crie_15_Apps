@@ -19,7 +19,9 @@ class MyApp extends StatelessWidget {
           background: Colors.green.shade700,
           brightness: Brightness.light,
         ).copyWith(
-            secondary: Colors.green.shade900, tertiary: Colors.grey.shade500),
+          secondary: Colors.green.shade900,
+          tertiary: Colors.grey.shade500,
+        ),
         textTheme: ThemeData.light().textTheme.copyWith(
               bodySmall: const TextStyle(
                 fontSize: 16,
