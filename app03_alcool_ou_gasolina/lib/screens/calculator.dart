@@ -57,8 +57,8 @@ class _CalculatorState extends State<Calculator> {
               Animate(
                 effects: const [
                   FadeEffect(),
-                  ScaleEffect(),
-                  ShakeEffect(hz: 10),
+                  ScaleEffect(duration: Duration(seconds: 1,),),
+                  ShakeEffect(hz: 4),
                 ],
                 child: Image.asset(
                   './assets/images/logo.png',
