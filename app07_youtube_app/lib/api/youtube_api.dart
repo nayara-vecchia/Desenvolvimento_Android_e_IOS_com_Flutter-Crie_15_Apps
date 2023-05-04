@@ -1,14 +1,13 @@
 import 'package:http/http.dart' as http;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'dart:convert';
 
 import 'package:app07_youtube_app/models/video.dart';
 
-
-const API_KEY = "AIzaSyDeWtJoVFU9jI-3dfo56F5O1h9Eg_yklQ0";
-const CHANNEL_ID = "UCSIvrn68cUk8CS8MbtBmBkA";
-const BASE_URL = "www.googleapis.com";
-const PATH_URL = '/youtube/v3/search';
-
+final API_KEY = dotenv.env['API_KEY'].toString();
+final CHANNEL_ID = dotenv.env['CHANNEL_ID'].toString();
+final BASE_URL = dotenv.env['BASE_URL'].toString();
+final PATH_URL = dotenv.env['PATH_URL'].toString();
 
 class Api {
   Future<List<Video>> pesquisar(String pesquisa) async {
