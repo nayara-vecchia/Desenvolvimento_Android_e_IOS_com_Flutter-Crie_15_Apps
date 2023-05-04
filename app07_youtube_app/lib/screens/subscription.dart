@@ -5,6 +5,6 @@ class Subscription extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text('Inscrições');
+    return const Text('Inscrições');
   }
 }

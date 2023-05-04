@@ -5,6 +5,6 @@ class Folder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text('Biblioteca');
+    return const Text('Biblioteca');
   }
 }

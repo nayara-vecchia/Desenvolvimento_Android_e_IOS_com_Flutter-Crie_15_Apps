@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-
 class Video {
   String id;
   String title;
@@ -14,15 +12,6 @@ class Video {
     required this.imageUrl,
     required this.channel,
   });
-
-  // static convertJson(Map<String, dynamic> json) {
-  //   return Video(
-  //       id: json['id']['videoId'],
-  //       title: json['snippet']['title'],
-  //       description: json['snippet']['description'],
-  //       imageUrl: json['snippet']['thumbnails']['high']['url'],
-  //       channel: json['snippet']['channelTitle']);
-  // }
 
 //otimização de memória devido ao uso de uma única instância de Video
   factory Video.fromJson(Map<String, dynamic> json) {

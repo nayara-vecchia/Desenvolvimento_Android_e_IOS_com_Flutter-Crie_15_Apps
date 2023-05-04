@@ -5,6 +5,6 @@ class Whatshot extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text('Em Alta');
+    return const Text('Em Alta');
   }
 }
