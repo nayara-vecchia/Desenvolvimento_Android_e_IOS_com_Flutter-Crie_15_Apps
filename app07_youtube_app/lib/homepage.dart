@@ -23,14 +23,14 @@ class _MyHomePageState extends State<MyHomePage> {
       Home(
         search: _researchString,
       ),
-      Whatshot(),
-      Subscription(),
-      Folder(),
+      const Whatshot(),
+      const Subscription(),
+      const Folder(),
     ];
 
     return Scaffold(
       appBar: AppBar(
-        iconTheme: IconThemeData(color: Colors.grey),
+        iconTheme: const IconThemeData(color: Colors.grey),
         backgroundColor: Colors.white,
         actions: [
           IconButton(
@@ -44,20 +44,9 @@ class _MyHomePageState extends State<MyHomePage> {
                   _researchString = res;
                 });
               }
-              // print(res);
             },
-            icon: Icon(Icons.search),
+            icon: const Icon(Icons.search),
           ),
-          /*
-          IconButton(
-            onPressed: () {},
-            icon: Icon(Icons.videocam),
-          ),
-          IconButton(
-            onPressed: () {},
-            icon: Icon(Icons.account_circle),
-          ),
-          */
         ],
         title: Container(
           alignment: Alignment.centerLeft,

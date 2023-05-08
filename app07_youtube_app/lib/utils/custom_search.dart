@@ -3,45 +3,38 @@ import 'package:flutter/material.dart';
 class CustomSearchDelegate extends SearchDelegate<String> {
   @override
   List<Widget>? buildActions(BuildContext context) {
-    // TODO: implement buildActions
     return [
       IconButton(
         onPressed: () {
           query = '';
         },
-        icon: Icon(Icons.clear),
+        icon: const Icon(Icons.clear),
       ),
     ];
-    // throw UnimplementedError();
   }
 
   @override
   Widget? buildLeading(BuildContext context) {
-    // TODO: implement buildLeading
     return IconButton(
       onPressed: () {
         close(context, '');
       },
-      icon: Icon(Icons.arrow_back),
+      icon: const Icon(Icons.arrow_back),
     );
   }
 
   @override
   Widget buildResults(BuildContext context) {
-    // print('pesquisa efetuada');
-    // TODO: implement buildResults
     close(context, query);
     return Container();
   }
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    // TODO: implement buildSuggestions
-    // print('resultado digitado $query');
     List<String> list = [];
 
     if (query.isNotEmpty) {
-      //essa lista de sugeridos seria recuperada de uma api
+      //this suggested list would be retrieved from an api
       list = ['Flutter', 'Beginners', 'Animation', 'Android', 'IOS']
           .where((element) =>
               element.toLowerCase().startsWith(query.toLowerCase()))
@@ -61,13 +54,8 @@ class CustomSearchDelegate extends SearchDelegate<String> {
         },
       );
     }
-    return Center(
+    return const Center(
       child: Text('Nenhum resultado para a pesquisa'),
     );
-    // else {
-    //   return Center(
-    //     child: Text('Nenhum resultado para a pesquisa'),
-    //   );
-    // }
   }
 }
