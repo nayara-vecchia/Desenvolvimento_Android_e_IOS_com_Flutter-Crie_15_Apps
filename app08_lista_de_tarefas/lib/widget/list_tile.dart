@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 class ListTileW extends StatefulWidget {
-  ListTileW({super.key, required this.listText});
+  const ListTileW({super.key, required this.listText});
 
-  String listText;
+  final String listText;
 
   @override
   State<ListTileW> createState() => _ListTileWState();
@@ -14,7 +14,6 @@ class _ListTileWState extends State<ListTileW> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     isSelected = false;
   }
@@ -25,7 +24,6 @@ class _ListTileWState extends State<ListTileW> {
       title: Text(widget.listText),
       value: isSelected,
       onChanged: (newValue) {
-        print(newValue);
         setState(() {
           isSelected == newValue;
         });

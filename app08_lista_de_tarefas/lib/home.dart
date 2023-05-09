@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'dart:io';
 import 'dart:async';
@@ -50,10 +48,29 @@ class _HomePageState extends State<HomePage> {
   }
 
   _deleteTask(int index, DismissDirection direction) async {
+    final Map<String, dynamic> deletedItem = _taskList[index];
+
+    //Removes the task from the list and save the file
     setState(() {
       _taskList.removeAt(index);
     });
     _saveTaskFile();
+
+    //Shows snackbar so if the user want to revert the removal, its possible while the 5s duration
+    final snackBar = SnackBar(
+      content: const Text('Do you want to cancel?'),
+      duration: const Duration(seconds: 5),
+      action: SnackBarAction(
+          label: 'Yes!',
+          textColor: Colors.amber,
+          onPressed: () {
+            setState(() {
+              _taskList.insert(index, deletedItem);
+            });
+            _saveTaskFile();
+          }),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
   @override
@@ -80,18 +97,23 @@ class _HomePageState extends State<HomePage> {
               itemCount: _taskList.length,
               itemBuilder: (context, index) {
                 return Dismissible(
-                  key: ValueKey<String>('${index.toString()}${_taskList[index]}'),
+                  key: ValueKey<String>(
+                      DateTime.now().microsecondsSinceEpoch.toString()),
+                  direction: DismissDirection.startToEnd,
                   onDismissed: (direction) {
                     _deleteTask(index, direction);
                   },
                   // direction: DismissDirection.endToStart,
                   background: Container(
                     alignment: Alignment.centerLeft,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                      child: Icon(Icons.delete, color: Colors.white,),
-                    ),
                     color: Colors.red.shade600,
+                    child: const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 20.0),
+                      child: Icon(
+                        Icons.delete,
+                        color: Colors.white,
+                      ),
+                    ),
                   ),
                   child: CheckboxListTile(
                     title: Text(_taskList[index]['title']),
