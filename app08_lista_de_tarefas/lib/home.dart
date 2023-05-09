@@ -1,9 +1,10 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'dart:io';
 import 'dart:async';
 import 'dart:convert';
 import 'package:path_provider/path_provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key, required this.title});
@@ -14,48 +15,51 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  List _taskList = [];
-  // List<Map<String, dynamic>> _taskList = [];
+  List<dynamic> _taskList = [];
+  final TextEditingController _controller = TextEditingController();
 
-  Future<String> get _localPath async {
+  Future<File> _getLocalFile() async {
     final directory = await getApplicationDocumentsDirectory();
-    return directory.path;
+    return File("${directory.path}/todoListData.json");
   }
 
-  Future<File> get _localFile async {
-    final path = await _localPath;
-    return File('$path/todoListData.json');
-  }
-
-  Future<File> writeTaskList() async {
-    final file = await _localFile;
-    Map<String, dynamic> newTask = Map();
-    newTask['title'] = 'text 01';
-    newTask['status'] = false;
-    _taskList.add(newTask);
-    String data = jsonEncode(_taskList);
-    print(data);
-    print(newTask);
-    return file.writeAsString('$data');
-  }
-
-  Future<String> readTaskList() async {
+  Future<String> _readTaskList() async {
     try {
-      final file = await _localFile;
-      // Read the file
-      final contents = await file.readAsString();
-
+      final file = await _getLocalFile();
       return file.readAsString();
     } catch (e) {
-      // If encountering an error, return 0
-      return 'Não foi possivel ler o arquivo';
+      rethrow;
     }
+  }
+
+  _saveTask() async {
+    Map<String, dynamic> newTask = {};
+    newTask["title"] = _controller.text;
+    newTask["status"] = false;
+    setState(() {
+      _taskList.add(newTask);
+    });
+    _saveTaskFile();
+    _controller.text = '';
+  }
+
+  _saveTaskFile() async {
+    final file = await _getLocalFile();
+    String data = json.encode(_taskList);
+    file.writeAsString(data);
+  }
+
+  _deleteTask(int index, DismissDirection direction) async {
+    setState(() {
+      _taskList.removeAt(index);
+    });
+    _saveTaskFile();
   }
 
   @override
   void initState() {
     super.initState();
-    readTaskList().then((value) {
+    _readTaskList().then((value) {
       setState(() {
         _taskList = jsonDecode(value);
       });
@@ -75,10 +79,30 @@ class _HomePageState extends State<HomePage> {
             child: ListView.builder(
               itemCount: _taskList.length,
               itemBuilder: (context, index) {
-                return CheckboxListTile(
-                  title: Text(_taskList[index]['title']),
-                  value: _taskList[index]['status'],
-                  onChanged: (newValue) {},
+                return Dismissible(
+                  key: ValueKey<String>('${index.toString()}${_taskList[index]}'),
+                  onDismissed: (direction) {
+                    _deleteTask(index, direction);
+                  },
+                  // direction: DismissDirection.endToStart,
+                  background: Container(
+                    alignment: Alignment.centerLeft,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                      child: Icon(Icons.delete, color: Colors.white,),
+                    ),
+                    color: Colors.red.shade600,
+                  ),
+                  child: CheckboxListTile(
+                    title: Text(_taskList[index]['title']),
+                    value: _taskList[index]['status'],
+                    onChanged: (newValue) {
+                      setState(() {
+                        _taskList[index]['status'] = newValue;
+                      });
+                      _saveTaskFile();
+                    },
+                  ),
                 );
               },
             ),
@@ -95,7 +119,8 @@ class _HomePageState extends State<HomePage> {
               return AlertDialog(
                 title: const Text('Add task'),
                 content: TextField(
-                  decoration: InputDecoration(
+                  controller: _controller,
+                  decoration: const InputDecoration(
                     labelText: 'Add your task',
                   ),
                 ),
@@ -107,7 +132,7 @@ class _HomePageState extends State<HomePage> {
                     child: const Text('Cancel'),
                   ),
                   TextButton(
-                    onPressed: () {},
+                    onPressed: _saveTask,
                     child: const Text('Save'),
                   ),
                 ],
@@ -115,7 +140,7 @@ class _HomePageState extends State<HomePage> {
             },
           );
         },
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
