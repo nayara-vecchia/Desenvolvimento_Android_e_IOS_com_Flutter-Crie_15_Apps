@@ -10,7 +10,7 @@ final BASE_URL = dotenv.env['BASE_URL'].toString();
 final PATH_URL = dotenv.env['PATH_URL'].toString();
 
 class Api {
-  Future<List<VideoModel>> research(String pesquisa) async {
+  Future<List<VideoModel>> research(String researchQueryString) async {
     final url = Uri.https(
       BASE_URL,
       PATH_URL,
@@ -21,7 +21,7 @@ class Api {
         'order': 'date',
         'key': API_KEY,
         'channelId': CHANNEL_ID,
-        'q': pesquisa,
+        'q': researchQueryString,
       },
     );
 

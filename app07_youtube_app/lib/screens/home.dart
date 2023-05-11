@@ -5,8 +5,8 @@ import 'package:app07_youtube_app/widgets/video.dart';
 
 
 class Home extends StatefulWidget {
-  Home({super.key, required this.search});
-  String search;
+  final String search;
+  const Home({super.key, required this.search});
 
   @override
   State<Home> createState() => _HomeState();
