@@ -13,15 +13,22 @@ class Content extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 40),
       child: Animate(
         effects: const [FadeEffect()],
-        child: isLoading
-            ? CircularProgressIndicator(color: Colors.amber.shade800,)
-            : Text(
-                bitcoinValue,
-                style: TextStyle(
-                  fontSize: 40,
-                  color: Colors.grey[800],
+        child: Container(
+          alignment: Alignment.center,
+          height: 60,
+          width: 300,
+          child: isLoading
+              ? CircularProgressIndicator(
+                  color: Colors.amber.shade800,
+                )
+              : Text(
+                  bitcoinValue,
+                  style: TextStyle(
+                    fontSize: 40,
+                    color: Colors.grey[800],
+                  ),
                 ),
-              ),
+        ),
       ),
     );
   }
