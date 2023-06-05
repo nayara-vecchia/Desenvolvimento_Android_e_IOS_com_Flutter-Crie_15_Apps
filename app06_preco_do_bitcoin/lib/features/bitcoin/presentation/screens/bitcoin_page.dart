@@ -21,7 +21,7 @@ class _BitcoinScreenState extends State<BitcoinScreen> {
           ScaffoldMessenger.of(bitcoinCubitListenerContext).showSnackBar(
             SnackBar(
               content: Text(state.message),
-              duration: Duration(milliseconds: 300),
+              duration: const Duration(milliseconds: 300),
             ),
           );
         }
@@ -64,7 +64,9 @@ class _BitcoinScreenState extends State<BitcoinScreen> {
                         BlocProvider.of<BitcoinCubit>(context).updateBitcoinPrice();
                       },
                       style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all(Colors.amber.shade800),
+                        backgroundColor: MaterialStateProperty.all(
+                          Colors.amber.shade800,
+                        ),
                         fixedSize: MaterialStateProperty.all(
                           const Size(200, 60),
                         ),

@@ -18,9 +18,16 @@ class BitcoinCubit extends Cubit<BitcoinState> {
 
     final result = await getBitcoinValue.call();
     result.fold(
-        (failure) => emit(BitcoinError(failure.toString())),
-        (bitcoinEntity) => emit(BitcoinLoaded(
-              bitcoinValue: bitcoinEntity.lastValue.toString(),
-            )));
+      (failure) => emit(
+        BitcoinError(
+          failure.toString(),
+        ),
+      ),
+      (bitcoinEntity) => emit(
+        BitcoinLoaded(
+          bitcoinValue: bitcoinEntity.lastValue.toString(),
+        ),
+      ),
+    );
   }
 }
