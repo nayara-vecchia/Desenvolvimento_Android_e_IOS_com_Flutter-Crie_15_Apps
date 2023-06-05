@@ -1,9 +1,26 @@
 part of 'bitcoin_cubit.dart';
 
 @immutable
-class BitcoinState {
-  final String bitcoinValue;
-  final bool isLoading;
+abstract class BitcoinState {
+  const BitcoinState();
+}
 
-  const BitcoinState({required this.bitcoinValue, required this.isLoading});
+class BitcoinInitial extends BitcoinState {
+  const BitcoinInitial();
+}
+
+class BitcoinLoading extends BitcoinState{
+  const BitcoinLoading();
+}
+
+class BitcoinLoaded extends BitcoinState{
+  final String bitcoinValue;
+
+  const BitcoinLoaded({required this.bitcoinValue}); 
+
+}
+class BitcoinError extends BitcoinState {
+  final String message;
+
+  const BitcoinError(this.message);
 }

@@ -1,4 +1,6 @@
 // ignore: depend_on_referenced_packages
+import 'package:app06_preco_do_bitcoin/features/bitcoin/data/datasource/bitcoin_datasource.dart';
+import 'package:app06_preco_do_bitcoin/features/bitcoin/domain/usecases/get_bitcoin_value.dart';
 import 'package:bloc/bloc.dart';
 import 'dart:convert';
 
@@ -8,34 +10,17 @@ import 'package:flutter/material.dart';
 part 'bitcoin_state.dart';
 
 class BitcoinCubit extends Cubit<BitcoinState> {
-  BitcoinCubit()
-      : super(
-          const BitcoinState(bitcoinValue: '', isLoading: false),
-        );
+  final GetBitcoinValue getBitcoinValue;
+  BitcoinCubit({required this.getBitcoinValue}) : super(const BitcoinInitial());
 
   void updateBitcoinPrice() async {
-    final url = Uri.https('blockchain.info', '/ticker');
-    emit(
-      const BitcoinState(bitcoinValue: '', isLoading: true),
-    );
+    emit(const BitcoinLoading());
 
-    try {
-      final response = await http.get(url);
-      final data = json.decode(response.body);
-      if (response.statusCode >= 400) {
-        emit(
-          const BitcoinState(bitcoinValue: 'Failed', isLoading: false),
-        );
-      }
-      if (response.statusCode == 200) {
-        emit(
-          BitcoinState(
-              bitcoinValue: 'R\$ ${data['BRL']!['last'].toString()}',
-              isLoading: false),
-        );
-      }
-    } catch (e) {
-      rethrow;
-    }
+    final result = await getBitcoinValue.call();
+    result.fold(
+        (failure) => emit(BitcoinError(failure.toString())),
+        (bitcoinEntity) => emit(BitcoinLoaded(
+              bitcoinValue: bitcoinEntity.lastValue.toString(),
+            )));
   }
 }

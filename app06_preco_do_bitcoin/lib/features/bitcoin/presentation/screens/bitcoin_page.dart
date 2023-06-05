@@ -17,10 +17,10 @@ class _BitcoinScreenState extends State<BitcoinScreen> {
   Widget build(BuildContext context) {
     return BlocListener<BitcoinCubit, BitcoinState>(
       listener: (bitcoinCubitListenerContext, state) {
-        if (state.bitcoinValue == 'Failed') {
+        if (state is BitcoinError) {
           ScaffoldMessenger.of(bitcoinCubitListenerContext).showSnackBar(
-            const SnackBar(
-              content: Text('Failed to fetch bitcoin value.'),
+            SnackBar(
+              content: Text(state.message),
               duration: Duration(milliseconds: 300),
             ),
           );
@@ -40,23 +40,31 @@ class _BitcoinScreenState extends State<BitcoinScreen> {
                   padding: const EdgeInsets.only(bottom: 5),
                   child: Image.asset('assets/images/bitcoin.png'),
                 ),
-                BlocBuilder<BitcoinCubit, BitcoinState>(
-                  builder: (context, state) {
-                    return Content(
-                        bitcoinValue: state.bitcoinValue,
-                        isLoading: state.isLoading);
-                  },
+                Container(
+                  alignment: Alignment.center,
+                  height: 100,
+                  width: 300,
+                  child: BlocBuilder<BitcoinCubit, BitcoinState>(
+                    builder: (context, state) {
+                      if (state is BitcoinLoading) {
+                        return const CircularProgressIndicator();
+                      } else if (state is BitcoinLoaded) {
+                        return Content(
+                          bitcoinValue: state.bitcoinValue,
+                        );
+                      }
+                      return const SizedBox.shrink();
+                    },
+                  ),
                 ),
                 Builder(
                   builder: (materialButtonContext) {
                     return ElevatedButton(
                       onPressed: () {
-                        BlocProvider.of<BitcoinCubit>(context)
-                            .updateBitcoinPrice();
+                        BlocProvider.of<BitcoinCubit>(context).updateBitcoinPrice();
                       },
                       style: ButtonStyle(
-                        backgroundColor:
-                            MaterialStateProperty.all(Colors.amber.shade800),
+                        backgroundColor: MaterialStateProperty.all(Colors.amber.shade800),
                         fixedSize: MaterialStateProperty.all(
                           const Size(200, 60),
                         ),
