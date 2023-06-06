@@ -1,223 +1,197 @@
 import 'package:flutter/material.dart';
+import 'package:path/path.dart';
 
 import 'package:intl/intl.dart';
-import 'package:intl/date_symbol_data_local.dart';
 
 import 'helper/notes_helper.dart';
 import 'model/note_model.dart';
 
-
-
 class Home extends StatefulWidget {
+  const Home({super.key});
+
   @override
   _HomeState createState() => _HomeState();
 }
 
 class _HomeState extends State<Home> {
+  final TextEditingController _titleController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
+  List<Note> _notes = [];
+  final _db = NoteHelper();
 
-  TextEditingController _tituloController = TextEditingController();
-  TextEditingController _descricaoController = TextEditingController();
-  var _db = NoteHelper();
-  List<Note> _anotacoes = <Note>[];
+  _saveNote(note) async {
+    String title = _titleController.text;
+    String description = _descriptionController.text;
+    String date = DateTime.now().toString();
 
-  _exibirTelaCadastro( {anotacao} ){
-
-    String textoSalvarAtualizar = "";
-    if( anotacao == null ){//salvando
-      _tituloController.text = "";
-      _descricaoController.text = "";
-      textoSalvarAtualizar = "Salvar";
-    }else{//atualizar
-      _tituloController.text = anotacao.titulo;
-      _descricaoController.text = anotacao.descricao;
-      textoSalvarAtualizar = "Atualizar";
+    if (note == null) {
+      Note note = Note(
+        title,
+        description,
+        date,
+      );
+      await _db.saveNote(
+        note,
+      );
+    } else {
+      note.title = title;
+      note.description = description;
+      note.date = date;
+      await _db.updateNotes(note);
     }
 
-    showDialog(
-        context: context,
-      builder: (context){
-          return AlertDialog(
-            title: Text("$textoSalvarAtualizar anotação"),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                TextField(
-                  controller: _tituloController,
-                  autofocus: true,
-                  decoration: InputDecoration(
-                    labelText: "Título",
-                    hintText: "Digite título..."
-                  ),
-                ),
-                TextField(
-                  controller: _descricaoController,
-                  decoration: InputDecoration(
-                      labelText: "Descrição",
-                      hintText: "Digite descrição..."
-                  ),
-                )
-              ],
-            ),
-            actions: <Widget>[
-              OutlinedButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: Text("Cancelar")
-              ),
-              OutlinedButton(
-                  onPressed: (){
-
-                    //salvar
-                    _salvarAtualizarAnotacao(anotacaoSelecionada: anotacao);
-
-                    Navigator.pop(context);
-                  },
-                  child: Text(textoSalvarAtualizar)
-              )
-            ],
-          );
-      }
-    );
-
+    _titleController.clear();
+    _descriptionController.clear();
+    _listNotes();
   }
 
-  _recuperarAnotacoes() async {
-
-    List anotacoesRecuperadas = await _db.recuperarAnotacoes();
-
-    List<Note> listaTemporaria = <Note>[];
-    for( var item in anotacoesRecuperadas ){
-
-      Note anotacao = Note.fromMap( item );
-      listaTemporaria.add( anotacao );
-
+  _listNotes() async {
+    List notes = await _db.listNotes();
+    List<Note> temp = [];
+    for (Map item in notes) {
+      final note = Note.fromMap(item);
+      temp.add(note);
     }
-
     setState(() {
-      _anotacoes = listaTemporaria;
+      _notes = temp;
     });
-    listaTemporaria = [];
-
-    //print("Lista anotacoes: " + anotacoesRecuperadas.toString() );
-
+    temp = [];
   }
 
-  _salvarAtualizarAnotacao( {Note? anotacaoSelecionada} ) async {
-
-    String titulo = _tituloController.text;
-    String descricao = _descricaoController.text;
-
-    if( anotacaoSelecionada == null ){//salvar
-      Note anotacao = Note(titulo, descricao, DateTime.now().toString() );
-      int resultado = await _db.salvarAnotacao( anotacao );
-    }else{//atualizar
-      anotacaoSelecionada.titulo    = titulo;
-      anotacaoSelecionada.descricao = descricao;
-      anotacaoSelecionada.data      = DateTime.now().toString();
-      int resultado = await _db.atualizarAnotacao( anotacaoSelecionada );
-    }
-
-    _tituloController.clear();
-    _descricaoController.clear();
-
-    _recuperarAnotacoes();
-
-  }
-
-  _formatarData(String data){
-
-    initializeDateFormatting("pt_BR");
-
-    //Year -> y month-> M Day -> d
-    // Hour -> H minute -> m second -> s
-    //var formatador = DateFormat("d/MMMM/y H:m:s");
-    var formatador = DateFormat.yMd("pt_BR");
-
-    DateTime dataConvertida = DateTime.parse( data );
-    String dataFormatada = formatador.format( dataConvertida );
-
-    return dataFormatada;
-
-
-  }
-
-  _removerAnotacao(int id) async {
-
-    await _db.removerAnotacao( id );
-
-    _recuperarAnotacoes();
-
+  _deleteNote(int id) async {
+    await _db.deleteNotes(id);
+    _listNotes();
   }
 
   @override
   void initState() {
     super.initState();
-    _recuperarAnotacoes();
+    _listNotes();
   }
 
   @override
   Widget build(BuildContext context) {
+    _showModal(note) {
+      String text = "";
+      if (note == null) {
+        //salvando
+        _titleController.text = "";
+        _descriptionController.text = "";
+        text = "Salvar";
+      } else {
+        //atualizar
+        _titleController.text = note.title;
+        _descriptionController.text = note.description;
+        text = "Atualizar";
+      }
+
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text("Adicionar nota"),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                TextField(
+                  controller: _titleController,
+                  autofocus: true,
+                  decoration: const InputDecoration(
+                    labelText: "Título",
+                    hintText: "Digite o título",
+                  ),
+                ),
+                TextField(
+                  controller: _descriptionController,
+                  decoration: const InputDecoration(
+                    labelText: "Descrição",
+                    hintText: "Digite a descrição",
+                  ),
+                ),
+              ],
+            ),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text("Cancelar"),
+              ),
+              TextButton(
+                onPressed: () {
+                  //salvar
+                  _saveNote(note);
+                  Navigator.pop(context);
+                },
+                child: Text(text),
+              ),
+            ],
+          );
+        },
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
-        title: Text("Minhas anotações"),
+        title: const Text("Minhas anotações"),
         backgroundColor: Colors.lightGreen,
       ),
       body: Column(
         children: <Widget>[
           Expanded(
-              child: ListView.builder(
-                  itemCount: _anotacoes.length,
-                  itemBuilder: (context, index){
-                    
-                    final anotacao = _anotacoes[index];
-                    
-                    return Card(
-                      child: ListTile(
-                        title: Text( anotacao.titulo ),
-                        subtitle: Text("${_formatarData(anotacao.data)} - ${anotacao.descricao}") ,
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            GestureDetector(
-                              onTap: (){
-                                _exibirTelaCadastro(anotacao: anotacao);
-                              },
-                              child: Padding(
-                                  padding: EdgeInsets.only(right: 16),
-                                child: Icon(
-                                  Icons.edit,
-                                  color: Colors.green,
-                                ),
+            child: ListView.builder(
+              itemCount: _notes.length,
+              itemBuilder: (context, index) {
+                final note = _notes[index];
+                return Card(
+                  child: ListTile(
+                    title: Text(note.title),
+                    subtitle: Text('${DateFormat("dd/MM/yyyy").format(
+                      DateTime.parse(note.date),
+                    )} - ${note.description}'),
+                    trailing: SizedBox(
+                      width: 70,
+                      child: Row(
+                        children: <Widget>[
+                          GestureDetector(
+                            onTap: () {
+                              _showModal(note);
+                            },
+                            child: const Padding(
+                              padding: EdgeInsets.only(right: 16),
+                              child: Icon(
+                                Icons.edit,
+                                color: Colors.green,
                               ),
                             ),
-                            GestureDetector(
-                              onTap: (){
-                                _removerAnotacao( anotacao.id );
-                              },
-                              child: Padding(
-                                padding: EdgeInsets.only(right: 0),
-                                child: Icon(
-                                  Icons.remove_circle,
-                                  color: Colors.red,
-                                ),
+                          ),
+                          GestureDetector(
+                            onLongPress: () {
+                              _deleteNote(int.parse(note.id.toString()));
+                            },
+                            child: const Padding(
+                              padding: EdgeInsets.only(right: 0),
+                              child: Icon(
+                                Icons.remove_circle,
+                                color: Colors.red,
                               ),
-                            )
-                          ],
-                        ),
+                            ),
+                          )
+                        ],
                       ),
-                    );
-
-                  }
-              )
-          )
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
         ],
       ),
       floatingActionButton: FloatingActionButton(
-          backgroundColor: Colors.green,
-          foregroundColor: Colors.white,
-          child: Icon(Icons.add),
-          onPressed: (){
-            _exibirTelaCadastro();
-          }
+        backgroundColor: Colors.green,
+        foregroundColor: Colors.white,
+        child: const Icon(Icons.add),
+        onPressed: () {
+          _showModal(null);
+        },
       ),
     );
   }

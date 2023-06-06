@@ -1,38 +1,33 @@
+class Note {
+  int? id;
+  late String title;
+  late String description;
+  late String date;
 
+  Note(this.title, this.description, this.date);
 
-
-class Note{
-
-  late int id;
-  late String titulo;
-  late String descricao;
-  late String data;
-
-  Note(this.titulo, this.descricao, this.data);
-
-  Note.fromMap(Map map){
-
-    this.id = map["id"];
-    this.titulo = map["titulo"];
-    this.descricao = map["descricao"];
-    this.data = map["data"];
-
+  Note.fromMap(Map map) {
+    id = map["id"];
+    title = map["title"];
+    description = map["description"];
+    date = map["date"];
   }
 
-  Map toMap(){
-
+  Map toMap() {
     Map<String, dynamic> map = {
-      "titulo" : this.titulo,
-      "descricao" : this.descricao,
-      "data" : this.data,
+      "title": title,
+      "description": description,
+      "date": date,
     };
 
-    if( this.id != null ){
-      map["id"] = this.id;
+    if (id != null) {
+      map["id"] = id;
     }
-
     return map;
-
   }
 
+  @override
+  String toString() {
+    return 'Note: {id: $id, title: $title, description: $description, date: $date}';
+  }
 }
